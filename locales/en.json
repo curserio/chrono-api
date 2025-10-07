@@ -1,0 +1,8 @@
+{
+    "master_not_found": "Master not found",
+    "invalid_request": "Invalid request data",
+    "booking_conflict": "The selected time slot is already booked",
+    "service_created": "Service successfully created",
+    "booking_confirmed": "Booking confirmed successfully"
+}
+

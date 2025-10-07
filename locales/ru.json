@@ -1,0 +1,8 @@
+{
+    "master_not_found": "Мастер не найден",
+    "invalid_request": "Неверные данные запроса",
+    "booking_conflict": "Выбранное время уже занято",
+    "service_created": "Услуга успешно создана",
+    "booking_confirmed": "Бронирование успешно подтверждено"
+}
+
