@@ -45,6 +45,8 @@ func New(addr, serviceName string, lc fx.Lifecycle, opts ...func(*Server)) *Serv
 	}
 	// language
 	e.Use(middleware.I18nMiddleware(server.defaultLanguage))
+	// timezone
+	e.Use(middleware.WithUserContext)
 
 	server.echo = e
 

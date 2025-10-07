@@ -45,6 +45,9 @@ func (h *ClientHandler) CreateClient(c echo.Context) error {
 		Phone:            req.Phone,
 		TelegramID:       req.TelegramID,
 		TelegramUsername: req.TelegramUsername,
+		City:             req.City,
+		Timezone:         req.Timezone,
+		Language:         req.Language,
 	})
 	if err != nil {
 		return errors.NewHTTPError(http.StatusInternalServerError, "failed to create client", err)
@@ -110,6 +113,9 @@ func (h *ClientHandler) UpdateClient(c echo.Context) error {
 		Phone:            req.Phone,
 		TelegramID:       req.TelegramID,
 		TelegramUsername: req.TelegramUsername,
+		City:             req.City,
+		Timezone:         req.Timezone,
+		Language:         req.Language,
 		UpdatedAt:        time.Now(),
 	}
 	client.ID = id

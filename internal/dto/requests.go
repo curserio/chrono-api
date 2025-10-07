@@ -10,21 +10,48 @@ import (
 
 type CreateMasterRequest struct {
 	Name             string  `json:"name" validate:"required,min=2,max=255"`
-	Email            string  `json:"email,omitempty" validate:"omitempty,email"`
-	Phone            string  `json:"phone,omitempty" validate:"omitempty,e164"`
+	Email            *string `json:"email,omitempty" validate:"omitempty,email"`
+	Phone            *string `json:"phone,omitempty" validate:"omitempty,e164"`
 	TelegramID       *int64  `json:"telegram_id,omitempty" validate:"omitempty,gte=1"`
 	TelegramUsername *string `json:"telegram_username,omitempty" validate:"omitempty,min=1,max=255"`
 	Description      *string `json:"description,omitempty" validate:"omitempty,min=1,max=500"`
-	Password         string  `json:"password" validate:"required,min=8,max=32"`
+	City             *string `json:"city" validate:"omitempty,min=1,max=100"`
+	Timezone         string  `json:"timezone" validate:"omitempty,timezone"`
+	Language         string  `json:"language" validate:"omitempty,len=2"`
 }
 
 type UpdateMasterRequest struct {
 	Name             string  `json:"name" validate:"omitempty,min=2,max=255"`
-	Email            string  `json:"email" validate:"omitempty,email"`
-	Phone            string  `json:"phone" validate:"omitempty,e164"`
+	Email            *string `json:"email" validate:"omitempty,email"`
+	Phone            *string `json:"phone" validate:"omitempty,e164"`
 	TelegramID       *int64  `json:"telegram_id" validate:"omitempty,gte=1"`
 	TelegramUsername *string `json:"telegram_username" validate:"omitempty,min=1,max=255"`
 	Description      *string `json:"description,omitempty" validate:"omitempty,min=1,max=500"`
+	City             *string `json:"city" validate:"omitempty,min=1,max=100"`
+	Timezone         string  `json:"timezone" validate:"omitempty,timezone"`
+	Language         string  `json:"language" validate:"omitempty,len=2"`
+}
+
+type CreateClientRequest struct {
+	Name             string  `json:"name" validate:"required,min=2,max=100"`
+	Email            *string `json:"email" validate:"omitempty,email"`
+	Phone            *string `json:"phone" validate:"omitempty,e164"`
+	TelegramID       *int64  `json:"telegram_id" validate:"omitempty,gte=1"`
+	TelegramUsername *string `json:"telegram_username" validate:"omitempty,min=1,max=255"`
+	City             *string `json:"city" validate:"omitempty,min=1,max=100"`
+	Timezone         string  `json:"timezone" validate:"omitempty,timezone"` // e.g. Europe/Moscow
+	Language         string  `json:"language" validate:"omitempty,len=2"`    // ISO 639-1
+}
+
+type UpdateClientRequest struct {
+	Name             string  `json:"name" validate:"omitempty,min=2,max=100"`
+	Email            *string `json:"email" validate:"omitempty,email"`
+	Phone            *string `json:"phone" validate:"omitempty,e164"`
+	TelegramID       *int64  `json:"telegram_id" validate:"omitempty,gte=1"`
+	TelegramUsername *string `json:"telegram_username" validate:"omitempty,min=1,max=255"`
+	City             *string `json:"city" validate:"omitempty,min=1,max=100"`
+	Timezone         string  `json:"timezone" validate:"omitempty,timezone"`
+	Language         string  `json:"language" validate:"omitempty,len=2"`
 }
 
 type CreateServiceRequest struct {
@@ -84,23 +111,6 @@ type ListBookingsRequest struct {
 	MasterID uuid.UUID `query:"master_id" validate:"required"`
 	FromDate time.Time `query:"from_date" validate:"required"`
 	ToDate   time.Time `query:"to_date" validate:"required,gtfield=FromDate"` // должно быть после FromDate
-}
-
-type CreateClientRequest struct {
-	Name             string  `json:"name" validate:"required,min=2,max=100"`
-	Email            string  `json:"email" validate:"required,email"`
-	Phone            string  `json:"phone" validate:"required,e164"`
-	TelegramID       *int64  `json:"telegram_id" validate:"omitempty,gte=1"`
-	TelegramUsername *string `json:"telegram_username" validate:"omitempty,min=1,max=255"`
-	Password         string  `json:"password" validate:"required,min=8,max=32"`
-}
-
-type UpdateClientRequest struct {
-	Name             string  `json:"name" validate:"omitempty,min=2,max=100"`
-	Email            string  `json:"email" validate:"omitempty,email"`
-	Phone            string  `json:"phone" validate:"omitempty,e164"`
-	TelegramID       *int64  `json:"telegram_id" validate:"omitempty,gte=1"`
-	TelegramUsername *string `json:"telegram_username" validate:"omitempty,min=1,max=255"`
 }
 
 type ScheduleType string

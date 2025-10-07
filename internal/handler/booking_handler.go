@@ -9,6 +9,7 @@ import (
 	"github.com/curserio/chrono-api/internal/errors"
 	"github.com/curserio/chrono-api/internal/infrastructure/http/server"
 	"github.com/curserio/chrono-api/internal/usecase"
+	"github.com/curserio/chrono-api/pkg/timeutil"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
@@ -41,10 +42,9 @@ func (h *BookingHandler) CreateBooking(c echo.Context) error {
 		return errors.NewHTTPError(http.StatusBadRequest, "invalid time format", err)
 	}
 
-	// TODO сохраняю в UTC, хотя у мастера может быть другая таймзона
-	date := req.Date.Truncate(24 * time.Hour).UTC()
-	start = time.Date(date.Year(), date.Month(), date.Day(), start.Hour(), start.Minute(), 0, 0, time.UTC)
-	end = time.Date(date.Year(), date.Month(), date.Day(), end.Hour(), end.Minute(), 0, 0, time.UTC)
+	date := timeutil.NormalizeDate(req.Date)
+	start = time.Date(date.Year(), date.Month(), date.Day(), start.Hour(), start.Minute(), 0, 0, date.Location())
+	end = time.Date(date.Year(), date.Month(), date.Day(), end.Hour(), end.Minute(), 0, 0, date.Location())
 
 	booking, err := h.bookingUseCase.CreateBooking(ctx, &entity.Booking{
 		MasterID:  req.MasterID,

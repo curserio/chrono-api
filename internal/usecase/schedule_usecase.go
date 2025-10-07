@@ -8,6 +8,7 @@ import (
 	"github.com/curserio/chrono-api/internal/domain/entity"
 	"github.com/curserio/chrono-api/internal/dto"
 	"github.com/curserio/chrono-api/internal/repository"
+	"github.com/curserio/chrono-api/pkg/timeutil"
 	"github.com/google/uuid"
 )
 
@@ -140,7 +141,7 @@ func (uc *ScheduleUseCase) GetSlotsBySchedule(ctx context.Context, scheduleID uu
 
 func (uc *ScheduleUseCase) GetSlotsByDate(ctx context.Context, masterID uuid.UUID, date time.Time) ([]*entity.ScheduleSlot, error) {
 	// Нормализуем дату, чтобы отсеять время
-	date = date.Truncate(24 * time.Hour).UTC()
+	date = timeutil.NormalizeDate(date)
 
 	slots, err := uc.repo.GetSlotsByDate(ctx, masterID, date)
 	if err != nil {
@@ -178,7 +179,7 @@ func (uc *ScheduleUseCase) DeleteSlot(ctx context.Context, id uuid.UUID) error {
 // even if there are no active slots for that date.
 func (uc *ScheduleUseCase) GetScheduleForDate(ctx context.Context, masterID uuid.UUID, date time.Time) ([]dto.ScheduleForDateResponse, error) {
 	// Normalize date to midnight UTC to ensure consistent lookups.
-	date = date.Truncate(24 * time.Hour).UTC()
+	date = timeutil.NormalizeDate(date)
 
 	// Check for override slots for the exact date.
 	overrideSlots, err := uc.repo.GetSlotsByDate(ctx, masterID, date)

@@ -52,6 +52,9 @@ func (h *MasterHandler) CreateMaster(c echo.Context) error {
 		Phone:            req.Phone,
 		TelegramID:       req.TelegramID,
 		TelegramUsername: req.TelegramUsername,
+		City:             req.City,
+		Timezone:         req.Timezone,
+		Language:         req.Language,
 		Description:      req.Description,
 	}
 
@@ -128,6 +131,9 @@ func (h *MasterHandler) UpdateMaster(c echo.Context) error {
 		TelegramID:       req.TelegramID,
 		TelegramUsername: req.TelegramUsername,
 		Description:      req.Description,
+		City:             req.City,
+		Timezone:         req.Timezone,
+		Language:         req.Language,
 		UpdatedAt:        time.Now(),
 	}
 	master.ID = id

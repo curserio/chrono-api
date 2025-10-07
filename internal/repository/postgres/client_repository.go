@@ -22,8 +22,11 @@ func NewClientRepository(conn *pgxpool.Pool) *ClientRepository {
 
 func (r *ClientRepository) Create(ctx context.Context, client *entity.Client) error {
 	query := `
-		INSERT INTO clients (name, email, phone, telegram_id, telegram_username, created_at, updated_at)
-		VALUES ($1, $2, $3, $4, $5, $6, $6)
+		INSERT INTO clients (
+			name, email, phone, telegram_id, telegram_username,
+			city, timezone, language, created_at, updated_at
+		)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $9)
 		RETURNING id`
 
 	now := time.Now()
@@ -36,6 +39,9 @@ func (r *ClientRepository) Create(ctx context.Context, client *entity.Client) er
 		client.Phone,
 		client.TelegramID,
 		client.TelegramUsername,
+		client.City,
+		client.Timezone,
+		client.Language,
 		now,
 	).Scan(&client.ID)
 
@@ -44,7 +50,9 @@ func (r *ClientRepository) Create(ctx context.Context, client *entity.Client) er
 
 func (r *ClientRepository) GetByID(ctx context.Context, id uuid.UUID) (*entity.Client, error) {
 	query := `
-		SELECT id, name, email, phone, telegram_id, telegram_username, created_at, updated_at
+		SELECT 
+			id, name, email, phone, telegram_id, telegram_username,
+			city, timezone, language, created_at, updated_at
 		FROM clients
 		WHERE id = $1`
 
@@ -56,6 +64,9 @@ func (r *ClientRepository) GetByID(ctx context.Context, id uuid.UUID) (*entity.C
 		&client.Phone,
 		&client.TelegramID,
 		&client.TelegramUsername,
+		&client.City,
+		&client.Timezone,
+		&client.Language,
 		&client.CreatedAt,
 		&client.UpdatedAt,
 	)
@@ -71,8 +82,17 @@ func (r *ClientRepository) GetByID(ctx context.Context, id uuid.UUID) (*entity.C
 func (r *ClientRepository) Update(ctx context.Context, client *entity.Client) error {
 	query := `
 		UPDATE clients
-		SET name = $1, email = $2, phone = $3, telegram_id = $4, telegram_username = $5, updated_at = $6
-		WHERE id = $7`
+		SET 
+			name = $1,
+			email = $2,
+			phone = $3,
+			telegram_id = $4,
+			telegram_username = $5,
+			city = $6,
+			timezone = $7,
+			language = $8,
+			updated_at = $9
+		WHERE id = $10`
 
 	result, err := r.conn.Exec(ctx, query,
 		client.Name,
@@ -80,6 +100,9 @@ func (r *ClientRepository) Update(ctx context.Context, client *entity.Client) er
 		client.Phone,
 		client.TelegramID,
 		client.TelegramUsername,
+		client.City,
+		client.Timezone,
+		client.Language,
 		time.Now(),
 		client.ID,
 	)
@@ -109,7 +132,9 @@ func (r *ClientRepository) Delete(ctx context.Context, id uuid.UUID) error {
 
 func (r *ClientRepository) List(ctx context.Context, offset, limit int) ([]*entity.Client, error) {
 	query := `
-		SELECT id, name, email, phone, telegram_id, telegram_username, created_at, updated_at
+		SELECT 
+			id, name, email, phone, telegram_id, telegram_username,
+			city, timezone, language, created_at, updated_at
 		FROM clients
 		ORDER BY id
 		LIMIT $1 OFFSET $2`
@@ -130,6 +155,9 @@ func (r *ClientRepository) List(ctx context.Context, offset, limit int) ([]*enti
 			&client.Phone,
 			&client.TelegramID,
 			&client.TelegramUsername,
+			&client.City,
+			&client.Timezone,
+			&client.Language,
 			&client.CreatedAt,
 			&client.UpdatedAt,
 		); err != nil {

@@ -11,6 +11,7 @@ import (
 	"github.com/curserio/chrono-api/internal/infrastructure/http/server"
 	"github.com/curserio/chrono-api/internal/usecase"
 	"github.com/curserio/chrono-api/pkg/logger"
+	"github.com/curserio/chrono-api/pkg/timeutil"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
@@ -314,7 +315,7 @@ func (h *ScheduleHandler) AddSlot(c echo.Context) error {
 
 	slot := &entity.ScheduleSlot{
 		ScheduleID: scheduleID,
-		Date:       req.Date.Truncate(24 * time.Hour).UTC(),
+		Date:       timeutil.NormalizeDate(req.Date),
 		IsDayOff:   req.IsDayOff,
 	}
 
@@ -365,7 +366,7 @@ func (h *ScheduleHandler) UpdateSlot(c echo.Context) error {
 
 	slot := &entity.ScheduleSlot{
 		ID:       slotID,
-		Date:     req.Date.Truncate(24 * time.Hour).UTC(),
+		Date:     timeutil.NormalizeDate(req.Date),
 		IsDayOff: req.IsDayOff,
 	}
 	if req.StartTime != nil && req.EndTime != nil {
@@ -416,7 +417,7 @@ func (h *ScheduleHandler) GetScheduleForDate(c echo.Context) error {
 	if err != nil {
 		return errors.NewHTTPError(http.StatusBadRequest, "invalid date format (use YYYY-MM-DD)", err)
 	}
-	date = date.Truncate(24 * time.Hour).UTC()
+	date = timeutil.NormalizeDate(date)
 
 	resp, err := h.scheduleUseCase.GetScheduleForDate(ctx, masterID, date)
 	if err != nil {
@@ -460,8 +461,8 @@ func (h *ScheduleHandler) GetScheduleForRange(c echo.Context) error {
 		return errors.NewHTTPError(http.StatusBadRequest, "toDate must be greater than fromDate", nil)
 	}
 
-	fromDate = fromDate.Truncate(24 * time.Hour).UTC()
-	toDate = toDate.Truncate(24 * time.Hour).UTC()
+	fromDate = timeutil.NormalizeDate(fromDate)
+	toDate = timeutil.NormalizeDate(toDate)
 
 	resp, err := h.scheduleUseCase.GetScheduleForRange(ctx, masterID, fromDate, toDate)
 	if err != nil {

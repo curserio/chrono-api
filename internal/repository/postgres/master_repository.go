@@ -22,8 +22,11 @@ func NewMasterRepository(conn *pgxpool.Pool) *MasterRepository {
 
 func (r *MasterRepository) Create(ctx context.Context, master *entity.Master) error {
 	query := `
-		INSERT INTO masters (name, email, phone, telegram_id, telegram_username, description, created_at, updated_at)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $7)
+		INSERT INTO masters (
+			name, email, phone, telegram_id, telegram_username,
+			description, city, timezone, language, created_at, updated_at
+		)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $10)
 		RETURNING id`
 
 	now := time.Now()
@@ -37,6 +40,9 @@ func (r *MasterRepository) Create(ctx context.Context, master *entity.Master) er
 		master.TelegramID,
 		master.TelegramUsername,
 		master.Description,
+		master.City,
+		master.Timezone,
+		master.Language,
 		now,
 	).Scan(&master.ID)
 
@@ -49,7 +55,9 @@ func (r *MasterRepository) Create(ctx context.Context, master *entity.Master) er
 
 func (r *MasterRepository) GetByID(ctx context.Context, id uuid.UUID) (*entity.Master, error) {
 	query := `
-		SELECT id, name, email, phone, telegram_id, telegram_username, description, created_at, updated_at
+		SELECT 
+			id, name, email, phone, telegram_id, telegram_username,
+			description, city, timezone, language, created_at, updated_at
 		FROM masters
 		WHERE id = $1`
 
@@ -62,6 +70,9 @@ func (r *MasterRepository) GetByID(ctx context.Context, id uuid.UUID) (*entity.M
 		&master.TelegramID,
 		&master.TelegramUsername,
 		&master.Description,
+		&master.City,
+		&master.Timezone,
+		&master.Language,
 		&master.CreatedAt,
 		&master.UpdatedAt,
 	)
@@ -79,8 +90,18 @@ func (r *MasterRepository) GetByID(ctx context.Context, id uuid.UUID) (*entity.M
 func (r *MasterRepository) Update(ctx context.Context, master *entity.Master) error {
 	query := `
 		UPDATE masters 
-		SET name = $1, email = $2, phone = $3, telegram_id = $4, telegram_username = $5, description = $6, updated_at = $7
-		WHERE id = $8`
+		SET 
+			name = $1,
+			email = $2,
+			phone = $3,
+			telegram_id = $4,
+			telegram_username = $5,
+			description = $6,
+			city = $7,
+			timezone = $8,
+			language = $9,
+			updated_at = $10
+		WHERE id = $11`
 
 	result, err := r.conn.Exec(ctx, query,
 		master.Name,
@@ -89,6 +110,9 @@ func (r *MasterRepository) Update(ctx context.Context, master *entity.Master) er
 		master.TelegramID,
 		master.TelegramUsername,
 		master.Description,
+		master.City,
+		master.Timezone,
+		master.Language,
 		time.Now(),
 		master.ID,
 	)
@@ -120,7 +144,9 @@ func (r *MasterRepository) Delete(ctx context.Context, id uuid.UUID) error {
 
 func (r *MasterRepository) List(ctx context.Context, offset, limit int) ([]*entity.Master, error) {
 	query := `
-		SELECT id, name, email, phone, telegram_id, telegram_username, description, created_at, updated_at
+		SELECT 
+			id, name, email, phone, telegram_id, telegram_username,
+			description, city, timezone, language, created_at, updated_at
 		FROM masters
 		ORDER BY id
 		LIMIT $1 OFFSET $2`
@@ -142,6 +168,9 @@ func (r *MasterRepository) List(ctx context.Context, offset, limit int) ([]*enti
 			&master.TelegramID,
 			&master.TelegramUsername,
 			&master.Description,
+			&master.City,
+			&master.Timezone,
+			&master.Language,
 			&master.CreatedAt,
 			&master.UpdatedAt,
 		)
